@@ -80,7 +80,7 @@ class GuiActor (kxg.Actor):
         }
 
         if symbol in suites_dict:
-            for card in self.world._deck:
+            for card in self.world.cards:
                 ext = card.get_extension(self)
 
                 if card.suite == suites_dict[symbol] or symbol == pyglet.window.key.A:
@@ -94,7 +94,7 @@ class GuiActor (kxg.Actor):
 
         i = 0
         coors = []
-        for card in self.world._deck:
+        for card in self.world.cards:
             x = i%13 * 75 + 37.5
             y = i//13 * 100 + 50
             ext = card.get_extension(self)

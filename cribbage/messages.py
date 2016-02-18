@@ -47,32 +47,29 @@ class StartGame (kxg.Message):
                 ('K',   "King",     10),
         )
         suites = ["Hearts", "Diamonds", "Spades", "Clubs"]
-        self.deck = [ tokens.Card(card_datum, suite)
+        self.cards = [ tokens.Card(card_datum, suite)
                 for card_datum in card_data
                 for suite in suites
         ]
 
     def tokens_to_add(self):
-        yield from self.deck
+        yield from self.cards
 
     def on_check(self, world):
-        if world._deck:
-            raise kxg.MessageCheck("deck already exists")
+        if world.cards:
+            raise kxg.MessageCheck("cards already exists")
 
     def on_execute(self, world):
-        # security of deck being in world? give to referee?
-        world._deck = self.deck[:]
-        world.deck = self.deck[:]
+        world.cards = self.cards[:]
 
 
-"""
 class StartDealing (kxg.Message):
-    ""
+    """
     Being the Dealing phase
-    ""
+    """
 
-    def __init__(self, world):
-        pass
+    def __init__(self, world, dealer):
+        self.dealer = dealer
 
     def on_check(self, world):
         phase = world.phase
@@ -80,8 +77,8 @@ class StartDealing (kxg.Message):
             raise kxg.MessageCheck("Not in correct phase to start dealing")
 
     def on_execute(self, world):
-        world.on_start_dealing()
-"""
+        world.on_start_dealing(self.dealer)
+
 
 class DiscardToCrib (kxg.Message):
 
