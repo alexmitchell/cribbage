@@ -24,6 +24,8 @@ class Card (kxg.Token):
         self.value = value
         self.suite = suite
 
+        self.in_play = False
+
     def __extend__(self):
         from . import gui
         return {

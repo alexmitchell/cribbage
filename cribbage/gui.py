@@ -51,7 +51,6 @@ class GuiActor (kxg.Actor):
     def __init__(self):
         super().__init__()
         self.player = None
-        self.debug_ran_once = False
 
     def on_setup_gui(self, gui):
         self.gui = gui
@@ -65,45 +64,23 @@ class GuiActor (kxg.Actor):
         self.gui.on_refresh_gui()
 
     def on_update_game(self, dt):
-        if not self.debug_ran_once:
-            self.set_extension_positions()
-            self.debug_ran_once = True
+        pass
 
     def on_key_press(self, symbol, modifiers):
+        pass
 
-        suites_dict = {
-                pyglet.window.key.H : "Hearts",
-                pyglet.window.key.D : "Diamonds",
-                pyglet.window.key.S : "Spades",
-                pyglet.window.key.C : "Clubs",
-                pyglet.window.key.A : "",
-        }
+    @kxg.subscribe_to_message(messages.DealToPlayer)
+    def on_deal_to_player(self, message):
+        (card_x, card_y) = self.world.card_size
+        if self.player == message.player:
+            codes = [card.code for card in self.player.hand]
+            kxg.info("Cards deltith to {self.player}. Cards: {codes}")
 
-        if symbol in suites_dict:
-            for card in self.world.cards:
+            for (i, card) in enumerate(self.player.hand):
+                x = card_x * (i + 0.5) + card_x
+                y = card_y / 2.0
                 ext = card.get_extension(self)
-
-                if card.suite == suites_dict[symbol] or symbol == pyglet.window.key.A:
-                    ext.card_image.visible = True
-                else:
-                    ext.card_image.visible = False
-
-
-    def set_extension_positions(self):
-        # Set initial card positions for testing
-
-        i = 0
-        coors = []
-        for card in self.world.cards:
-            x = i%13 * 75 + 37.5
-            y = i//13 * 100 + 50
-            ext = card.get_extension(self)
-
-            ext.position = Vector(x,y)
-
-            coors.append((x,y))
-
-            i += 1
+                ext.activate_card(Vector(x,y))
 
 
 class CardExtension (kxg.TokenExtension):
@@ -125,9 +102,15 @@ class CardExtension (kxg.TokenExtension):
         
         self.card_image.visible = False
 
+    def activate_card(self, position):
+        self.position = position
+        self.card_image.position = position
+        self.card_image.visible = True
+        
     @kxg.watch_token
     def on_update_game(self, delta_t):
-        self.card_image.position = self.position
+        if not self.token.in_play:
+            self.card_image.visible = False
 
     @kxg.watch_token
     def on_remove_from_world(self):

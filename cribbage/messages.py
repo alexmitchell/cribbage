@@ -117,6 +117,8 @@ class DealToPlayer (kxg.Message):
             raise kxg.MessageCheck("Only the referee can deal cards.")
 
     def on_execute(self, world):
+        for card in self.cards:
+            card.in_play = True
         self.player.hand = self.cards[:]
 
         codes = [card.code for card in self.cards]
