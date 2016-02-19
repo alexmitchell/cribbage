@@ -11,6 +11,7 @@ class Referee (kxg.Referee):
 
         self.deck = []
         self.in_play = []
+        self.in_hands = []
         self.discard_pile = []
         self.crib = []
         self.starter_card = []
@@ -28,13 +29,22 @@ class Referee (kxg.Referee):
 
     @kxg.subscribe_to_message(messages.StartGame)
     def on_start_game_message(self, message):
-        kxg.info("Executing start game.")
         self.deck = self.world.cards[:]
         dealer = random.choice(self.world.players)
         self >> messages.StartDealing(self.world, dealer)
 
+    @kxg.subscribe_to_message(messages.StartDealing)
+    def on_start_dealing(self, message):
+        world = self.world
+        for player in world.players:
+            kxg.info("Dealing to player {player}).")
+
+            new_hand = self.draw_cards(6)
+            self >> messages.DealToPlayer(player, new_hand)
+
     def on_update_game(self, dt):
-        pass
+        if not self.world.phase:
+            self >> messages.StartDealing(self.world)
 
 
     def draw_card(self):
@@ -48,16 +58,34 @@ class Referee (kxg.Referee):
 
         index = random.randrange(len(self.deck))
         card = self.deck.pop(index)
-        self.in_play.append(card)
+        self.in_hands.append(card)
         return card
 
-    def draw_cards(self, num):
-        return [self.draw_card() for x in range(num)]
+    def draw_cards(self, number):
+        return [self.draw_card() for x in range(number)]
 
     def discard_card(self, card):
+        self.in_hands.remove(card)
         self.discard_pile.append(card)
+
+    def discard_cards(self, cards):
+        for card in cards:
+            self.discard_card(card)
 
     def shuffle_discard_pile(self):
         self.deck += self.discard_pile
         self.discard_pile = []
 
+
+
+"""
+
+### referee.py ###
+
+    def on_start_dealing(self):
+        self.phase = 'Dealing'
+
+        for list in self.in_play, self.crib, self.starter_card, self.pegging_stack:
+            self.discard_cards(list)
+            list = []
+"""

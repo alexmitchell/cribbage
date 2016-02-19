@@ -113,11 +113,14 @@ class DealToPlayer (kxg.Message):
         self.cards = cards
 
     def on_check(self, world):
-        if not len(self.cards) == 6:
-            raise kxg.MessageCheck("Player must discard exactly two cards")
+        if not self.was_sent_by_referee():
+            raise kxg.MessageCheck("Only the referee can deal cards.")
 
     def on_execute(self, world):
         self.player.hand = self.cards[:]
+
+        codes = [card.code for card in self.cards]
+        kxg.info("Dealing cards to {self.player}. Cards: {codes}")
 
 
 
