@@ -10,7 +10,7 @@ def get_card_key(suite, code):
 class World (kxg.World):
 
     card_size = 75, 100
-    field_size = 8 * card_size[0], 3 * card_size[1]
+    field_size = 13 * card_size[0], 3 * card_size[1]
     codes = ('A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K')
     suites = ('Clubs', 'Spades', 'Hearts', 'Diamonds')
     phases = ('Dealing', 'Pegging', 'Scoring')
