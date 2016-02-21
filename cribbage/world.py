@@ -9,8 +9,12 @@ def get_card_key(suite, code):
 
 class World (kxg.World):
 
-    card_size = 75, 100
-    field_size = 13 * card_size[0], 3 * card_size[1]
+    card_size = 69, 93
+    border = 2
+    rows = 3
+    cols = 10
+    padding = 1
+    field_size = cols * (2 * (padding + border) + card_size[0]), rows * (2 * (padding + border) + card_size[1])
     codes = ('A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K')
     suites = ('Clubs', 'Spades', 'Hearts', 'Diamonds')
     phases = ('Dealing', 'Pegging', 'Scoring')
@@ -45,3 +49,6 @@ class World (kxg.World):
 
         self.starting_card = None
         self.pegging_stack = []
+
+
+

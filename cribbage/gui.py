@@ -8,6 +8,7 @@ from . import world, tokens, messages
 pyglet.resource.path = [
         os.path.join(os.path.dirname(__file__), '..', 'resources'),
         os.path.join(os.path.dirname(__file__), '..', 'resources','cards'),
+        os.path.join(os.path.dirname(__file__), '..', 'resources','borders'),
 ]
 
 class Gui:
@@ -29,12 +30,27 @@ class Gui:
                 filename = suite[0] + code + '.png'
                 self.images[key] = pyglet.resource.image(filename)
 
+        self.border_images = {}
+        for border_name in "border", "border-over", "border-down", "border-selected":
+                filename = border_name + '.png'
+                self.border_images[border_name] = pyglet.resource.image(filename)
+
         # Center all the images, which we will want to rotate around it's 
         # leftmost edge.
 
         for image in self.images.values():
             image.anchor_x = image.width / 2
             image.anchor_y = image.height / 2
+        
+        # Create the viewing grid
+        rows = world.World.rows
+        cols = world.World.cols
+        padding = world.World.padding
+        self.root = glooey.Gui(self.window, batch=self.batch)
+        self.grid = glooey.Grid(rows, cols, padding=padding)
+        for row, col in self.grid.yield_cells():
+            self.grid[row, col] = CardButton(self)
+        self.root.add(self.grid)
 
     def on_refresh_gui(self):
         pyglet.gl.glClearColor(*self.bg_color)
@@ -55,6 +71,15 @@ class GuiActor (kxg.Actor):
     def on_setup_gui(self, gui):
         self.gui = gui
         self.gui.window.set_handlers(self)
+
+        grid = self.gui.grid
+        for row, col in grid.yield_cells():
+            card_button = grid[row, col]
+            card_button.setup_gui_actor(self)
+
+        # Save special cells
+        self.hand_buttons = [ grid[2, i] for i in range(1,7)]
+
 
     def on_start_game(self, num_players):
         self.player = tokens.Player()
@@ -77,11 +102,94 @@ class GuiActor (kxg.Actor):
             kxg.info("Cards deltith to {self.player}. Cards: {codes}")
 
             for (i, card) in enumerate(self.player.hand):
-                x = card_x * (i + 0.5) + card_x
-                y = card_y / 2.0
-                ext = card.get_extension(self)
-                ext.activate_card(Vector(x,y))
 
+                self.hand_buttons[i].assign_card(card)
+
+                #x = card_x * (i + 0.5) + card_x
+                #y = card_y / 2.0
+                #ext = card.get_extension(self)
+                #ext.activate(Vector(x,y))
+
+
+
+class CardButton (glooey.Button):
+
+    def __init__ (self, gui):
+        super().__init__()
+
+        self.gui = gui
+
+        # Set up the glooey button
+        self.set_base_image(gui.border_images["border"])
+        self.set_over_image(gui.border_images["border-over"])
+        self.set_down_image(gui.border_images["border-down"])
+        self.set_selected_image(gui.border_images["border-selected"])
+        self.selected = False
+
+        # Set up the card handling
+        self.card = None
+
+    def setup_gui_actor(self, gui_actor):
+        self.gui_actor = gui_actor
+
+    def set_selected_image(self, image):
+        # Glooey button functionality. Probably should be added to glooey.
+        self.images['selected'] = image
+
+    def assign_card(self, card):
+        self.card = card
+        
+        # set the position of the card_image
+        x, y = self.rect.center
+        ext = card.get_extension(self.gui_actor)
+        ext.activate(Vector(x,y))
+
+        self.draw()
+
+    def unassign_card(self):
+        ext = self.card.get_extension(self.gui_actor)
+        ext.deactivate()
+        self.card = None
+
+    def draw(self):
+        # Only draw the button if it contains a card.
+        if self.card:
+            super().draw()
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        # overload glooey's Button functionality. Again, probably should be 
+        # added to glooey instead.
+
+        if self.selected:
+            self.state = 'over'
+        else:
+            self.state = 'selected'
+        self.selected = not self.selected
+        self.draw()
+        
+    def on_mouse_leave(self, x, y):
+        # overload glooey's Button functionality. Again, probably should be 
+        # added to glooey instead.
+        if self.selected:
+            self.state = 'selected'
+        else:
+            self.state = 'base'
+        self.draw()
+
+    def on_mouse_drag_enter(self, x, y):
+        # overload glooey's Button functionality. Again, probably should be 
+        # added to glooey instead.
+        self.state = 'down'
+        self.draw()
+
+    def on_mouse_drag_leave(self, x, y):
+        # overload glooey's Button functionality. Again, probably should be 
+        # added to glooey instead.
+        if self.selected:
+            self.state = 'selected'
+        else:
+            self.state = 'base'
+        self.draw()
 
 class CardExtension (kxg.TokenExtension):
 
@@ -102,15 +210,17 @@ class CardExtension (kxg.TokenExtension):
         
         self.card_image.visible = False
 
-    def activate_card(self, position):
+    def activate(self, position):
         self.position = position
         self.card_image.position = position
         self.card_image.visible = True
         
+    def deactivate(self):
+        self.card_image.visible = False
+        
     @kxg.watch_token
     def on_update_game(self, delta_t):
-        if not self.token.in_play:
-            self.card_image.visible = False
+        pass
 
     @kxg.watch_token
     def on_remove_from_world(self):
