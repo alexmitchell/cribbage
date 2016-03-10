@@ -26,9 +26,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.2555532"
-     inkscape:cx="301.53473"
-     inkscape:cy="429.53106"
+     inkscape:zoom="1.5681804"
+     inkscape:cx="61.327549"
+     inkscape:cy="261.23941"
      inkscape:current-layer="layer1"
      inkscape:document-units="px"
      showgrid="false"
@@ -583,5 +583,40 @@
        inkscape:export-filename="/home/alex/kxgames/cribbage/resources/cards/DK.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
-  </g>
+    <rect
+       y="460.76059"
+       x="27.327549"
+       height="92"
+       width="68"
+       id="rect4216-2"
+       style="opacity:1;fill:none;fill-opacity:0;stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:0;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:export-filename="/home/alex/kxgames/cribbage/resources/cards/Discard_to_crib.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4234"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"><flowRegion
+         id="flowRegion4236"><rect
+           id="rect4239"
+           width="54.159393"
+           height="67.699242"
+           x="35.044315"
+           y="474.9021" /></flowRegion><flowPara
+         id="flowPara4241" /></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4247"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.5px;line-height:200%;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:center;letter-spacing:0px;word-spacing:5px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       transform="translate(-6.2,-9.0181818)"><flowRegion
+         id="flowRegion4249"><rect
+           id="rect4251"
+           width="66.959991"
+           height="90.970932"
+           x="31"
+           y="465.10184"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.5px;line-height:200%;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:center;word-spacing:5px;text-anchor:middle" /></flowRegion><flowPara
+         id="flowPara4253"
+         style="font-style:italic;font-variant:normal;font-weight:500;font-stretch:normal;font-size:22.5px;line-height:200%;font-family:'URW Chancery L';-inkscape-font-specification:'URW Chancery L Medium Italic';text-align:center;word-spacing:5px;text-anchor:middle">Discard </flowPara><flowPara
+         style="font-style:italic;font-variant:normal;font-weight:500;font-stretch:normal;font-size:22.5px;line-height:200%;font-family:'URW Chancery L';-inkscape-font-specification:'URW Chancery L Medium Italic';text-align:center;word-spacing:5px;text-anchor:middle"
+         id="flowPara4255">to crib </flowPara></flowRoot>  </g>
 </svg>

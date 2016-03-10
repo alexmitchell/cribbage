@@ -79,7 +79,11 @@ class GuiActor (kxg.Actor):
 
         # Save special cells
         self.hand_buttons = [ grid[2, i] for i in range(1,7)]
+        for button in self.hand_buttons:
+            button.make_selectable()
 
+        self.selected_cards = []
+        self.max_selection = 2
 
     def on_start_game(self, num_players):
         self.player = tokens.Player()
@@ -111,13 +115,24 @@ class GuiActor (kxg.Actor):
                 #ext.activate(Vector(x,y))
 
 
+    def select_card(self, card_button):
+        # Remember the selected cards. Enforce a max of two selections
+        self.selected_cards.append(card_button)
+        if len(self.selected_cards) > self.max_selection:
+            old = self.selected_cards.pop(0)
+            old.unselect()
+
+    def unselect_card(self, card_button):
+        self.selected_cards.remove(card_button)
+
 
 class CardButton (glooey.Button):
 
-    def __init__ (self, gui):
+    def __init__ (self, gui, selectable=False):
         super().__init__()
 
         self.gui = gui
+        self.selectable = selectable
 
         # Set up the glooey button
         self.set_base_image(gui.border_images["border"])
@@ -136,6 +151,8 @@ class CardButton (glooey.Button):
         # Glooey button functionality. Probably should be added to glooey.
         self.images['selected'] = image
 
+    def make_selectable(self):
+        self.selectable = True
     def assign_card(self, card):
         self.card = card
         
@@ -156,16 +173,28 @@ class CardButton (glooey.Button):
         if self.card:
             super().draw()
 
+    def select(self):
+        self.state = 'selected'
+        self.selected = True
+        self.draw()
+
+    def unselect(self):
+        self.state = 'base'
+        self.selected = False
+        self.draw()
+
     def on_mouse_release(self, x, y, button, modifiers):
         # overload glooey's Button functionality. Again, probably should be 
         # added to glooey instead.
 
-        if self.selected:
-            self.state = 'over'
-        else:
-            self.state = 'selected'
-        self.selected = not self.selected
-        self.draw()
+        if self.selectable:
+            if self.selected:
+                self.gui_actor.unselect_card(self)
+                self.unselect()
+                self.state = 'over'
+            else:
+                self.gui_actor.select_card(self)
+                self.select()
         
     def on_mouse_leave(self, x, y):
         # overload glooey's Button functionality. Again, probably should be 
@@ -179,8 +208,9 @@ class CardButton (glooey.Button):
     def on_mouse_drag_enter(self, x, y):
         # overload glooey's Button functionality. Again, probably should be 
         # added to glooey instead.
-        self.state = 'down'
-        self.draw()
+        if self.selectable:
+            self.state = 'down'
+            self.draw()
 
     def on_mouse_drag_leave(self, x, y):
         # overload glooey's Button functionality. Again, probably should be 
