@@ -126,9 +126,10 @@ class GuiActor (kxg.Actor):
         self.selected_cards.remove(card_button)
 
 
-class CardButton (glooey.Button):
 
-    def __init__ (self, gui, selectable=False):
+class SelectButton (glooey.Button):
+
+    def __init__ (self, gui, selectable=True):
         super().__init__()
 
         self.gui = gui
@@ -141,9 +142,6 @@ class CardButton (glooey.Button):
         self.set_selected_image(gui.border_images["border-selected"])
         self.selected = False
 
-        # Set up the card handling
-        self.card = None
-
     def setup_gui_actor(self, gui_actor):
         self.gui_actor = gui_actor
 
@@ -153,25 +151,10 @@ class CardButton (glooey.Button):
 
     def make_selectable(self):
         self.selectable = True
-    def assign_card(self, card):
-        self.card = card
-        
-        # set the position of the card_image
-        x, y = self.rect.center
-        ext = card.get_extension(self.gui_actor)
-        ext.activate(Vector(x,y))
-
-        self.draw()
-
-    def unassign_card(self):
-        ext = self.card.get_extension(self.gui_actor)
-        ext.deactivate()
-        self.card = None
-
+    def make_unselectable(self):
+        self.selectable = False
     def draw(self):
-        # Only draw the button if it contains a card.
-        if self.card:
-            super().draw()
+        super().draw()
 
     def select(self):
         self.state = 'selected'
@@ -220,6 +203,43 @@ class CardButton (glooey.Button):
         else:
             self.state = 'base'
         self.draw()
+
+
+class CardButton (SelectButton):
+
+    def __init__ (self, gui, selectable=True):
+        super().__init__(gui, selectable)
+
+        self.gui = gui
+        self.selectable = selectable
+
+        # Set up the card handling
+        self.card = None
+
+    def setup_gui_actor(self, gui_actor):
+        self.gui_actor = gui_actor
+
+    def assign_card(self, card):
+        self.card = card
+        
+        # set the position of the card_image
+        x, y = self.rect.center
+        ext = card.get_extension(self.gui_actor)
+        ext.activate(Vector(x,y))
+
+        self.draw()
+
+    def unassign_card(self):
+        ext = self.card.get_extension(self.gui_actor)
+        ext.deactivate()
+        self.card = None
+
+    def draw(self):
+        # Only draw the button if it contains a card.
+        if self.card:
+            super().draw()
+
+
 
 class CardExtension (kxg.TokenExtension):
 
