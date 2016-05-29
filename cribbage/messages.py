@@ -52,15 +52,24 @@ class StartGame (kxg.Message):
                 for suite in suites
         ]
 
+        self.special_cards = [
+            tokens.SpecialCard('DTC', "Discard to Crib")
+            ]
+
     def tokens_to_add(self):
-        yield from self.cards
+        yield from self.cards + self.special_cards
 
     def on_check(self, world):
         if world.cards:
             raise kxg.MessageCheck("cards already exists")
 
     def on_execute(self, world):
-        world.cards = self.cards[:]
+        for card in self.cards:
+            key = world.get_card_key(card.suite, card.code)
+            world.cards[key] = card
+        for card in self.special_cards:
+            key = world.get_card_key(card.suite, card.code)
+            world.special_cards[key] = card
 
 
 class StartDealing (kxg.Message):

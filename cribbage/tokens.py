@@ -32,3 +32,7 @@ class Card (kxg.Token):
                 gui.GuiActor: gui.CardExtension,
         }
 
+class SpecialCard (Card):
+
+    def __init__(self, code, name, value=0):
+        super().__init__((code, name, value), "")

@@ -30,6 +30,9 @@ class Gui:
                 filename = suite[0] + code + '.png'
                 self.images[key] = pyglet.resource.image(filename)
 
+        key = world.get_card_key("", "DTC")
+        self.images[key] = pyglet.resource.image('Discard_to_crib.png')
+
         self.border_images = {}
         for border_name in "border", "border-over", "border-down", "border-selected":
                 filename = border_name + '.png'
@@ -61,6 +64,8 @@ class Gui:
         key = world.get_card_key(suite, code)
         return self.images[key]
 
+    def get_special_card(self, key):
+        return self.images[key]
 
 class GuiActor (kxg.Actor):
 
@@ -81,6 +86,9 @@ class GuiActor (kxg.Actor):
         self.hand_buttons = [ grid[2, i] for i in range(1,7)]
         for button in self.hand_buttons:
             button.make_selectable()
+
+        self.discard_button = grid[2, 9]
+        self.discard_button.make_unselectable()
 
         self.selected_cards = []
         self.max_selection = 2
@@ -121,6 +129,9 @@ class GuiActor (kxg.Actor):
         if len(self.selected_cards) > self.max_selection:
             old = self.selected_cards.pop(0)
             old.unselect()
+        if len(self.selected_cards) == self.max_selection:
+            discard_to_crib = self.world.special_cards['DTC']
+            self.discard_button.assign_card(discard_to_crib)
 
     def unselect_card(self, card_button):
         self.selected_cards.remove(card_button)
@@ -128,6 +139,7 @@ class GuiActor (kxg.Actor):
 
 
 class SelectButton (glooey.Button):
+    """ Given selection on/off states to the Glooey Button. Should be moved to the Glooey repository. """
 
     def __init__ (self, gui, selectable=True):
         super().__init__()

@@ -29,7 +29,7 @@ class Referee (kxg.Referee):
 
     @kxg.subscribe_to_message(messages.StartGame)
     def on_start_game_message(self, message):
-        self.deck = self.world.cards[:]
+        self.deck = list(self.world.cards.values())
         dealer = random.choice(self.world.players)
         self >> messages.StartDealing(self.world, dealer)
 
@@ -78,14 +78,3 @@ class Referee (kxg.Referee):
 
 
 
-"""
-
-### referee.py ###
-
-    def on_start_dealing(self):
-        self.phase = 'Dealing'
-
-        for list in self.in_play, self.crib, self.starter_card, self.pegging_stack:
-            self.discard_cards(list)
-            list = []
-"""

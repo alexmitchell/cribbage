@@ -4,7 +4,10 @@ import kxg
 from vecrec import Rect
 
 def get_card_key(suite, code):
-    return suite + '-' + code
+    if suite:
+        return suite + '-' + code
+    else:
+        return code
 
 
 class World (kxg.World):
@@ -24,6 +27,7 @@ class World (kxg.World):
 
         self.field = Rect.from_size(*self.field_size)
         self.cards = {} # do not remove items
+        self.special_cards = {} # do not remove items
         
         self.starter_card = None
         self.pegging_stack = []
@@ -39,6 +43,9 @@ class World (kxg.World):
     def get_value(self, name):
         return self.name_values[name]
 
+    def get_card_key(self, suite, code):
+        return get_card_key(suite, code)
+
     def on_start_dealing(self, dealer):
         self.phase = 'Dealing'
         
@@ -50,5 +57,7 @@ class World (kxg.World):
         self.starting_card = None
         self.pegging_stack = []
 
+
+    
 
 
